@@ -2,6 +2,7 @@ import colorsys
 import os
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 import cv2
+from tqdm import tqdm
 
 
 import numpy as np
@@ -158,13 +159,26 @@ class YOLO(object):
         return r_image, ObjectsList
 
     
+img_dir_name = "images"
+output_dir = "predict"
+cwd = os.getcwd()
+full_path = os.path.join(cwd,img_dir_name)
+out_path = os.path.join(cwd,output_dir)
+image_list = os.listdir(full_path)
+
+
 if __name__=="__main__":
     yolo = YOLO()
-    image = 'stampDS-00007.png'
-    r_image, ObjectsList = yolo.detect_img(image)
-    #print(ObjectsList)
-    cv2.imshow(image, r_image)
-    cv2.imwrite("predict_stampDS-00007.png", r_image)
-    if cv2.waitKey(250) & 0xFF == ord("q"):
-        cv2.destroyAllWindows()
-    yolo.close_session()
+    for i in tqdm(image_list):
+        img_path = os.path.join(full_path,i)
+        image = i
+
+        #print(img_path)
+        r_image, ObjectsList = yolo.detect_img(img_path)
+
+        #print(ObjectsList)
+        #cv2.imshow(image, r_image)
+        cv2.imwrite(os.path.join(out_path, "predict_"+image), r_image)
+        #if cv2.waitKey(250) & 0xFF == ord("q"):
+        #    cv2.destroyAllWindows()
+        #yolo.close_session()
